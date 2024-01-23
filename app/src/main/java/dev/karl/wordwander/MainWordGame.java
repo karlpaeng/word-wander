@@ -24,9 +24,8 @@ import dev.karl.wordwander.databinding.ActivityMainWordGameBinding;
 
 public class MainWordGame extends AppCompatActivity {
     SharedPreferences pref;
-//    SharedPreferences.Editor editor;
     MediaPlayer bg, newTry, reveal, win, lose, mediaPlayer;
-    String userWordGuess, masterWord, firstRun;
+    String userWordGuess, masterWord;
     TextView tvQ,tvW,tvE,tvR,tvT,tvY,tvU,tvI,tvO,tvP,tvA,tvS,tvD,tvF,tvG,tvH,tvJ,tvK,tvL,tvZ,tvX,tvC,tvV,tvB,tvN,tvM, tvEnter, tvClear, tvHintText;
     Integer LIGHT_BLUE = R.color.light_blue;
     Integer ORANGE = R.color.orange;
@@ -55,7 +54,6 @@ public class MainWordGame extends AppCompatActivity {
         lose = MediaPlayer.create(this, R.raw.lose_sound);
 
         pref = this.getSharedPreferences("WordSharedPrefs", Context.MODE_PRIVATE);
-        firstRun = pref.getString("firstRun", "");
 
         WordsDatasetHelper.initialize(this);
 
@@ -64,8 +62,6 @@ public class MainWordGame extends AppCompatActivity {
         initializeTextviews();
         setupEmptyGridView();
         setTextviewClickListeners();
-
-        //
 
         isMusicEnabled = pref.getBoolean("music", true);
         isSoundEnabled = pref.getBoolean("sound", true);
@@ -79,13 +75,8 @@ public class MainWordGame extends AppCompatActivity {
         tvClear = findViewById(R.id.tvClear);
 
         tvEnter.setOnClickListener(view -> {
-            //
-//            masterWord = WordsDatasetHelper.getNewRandomWord();
 
-//            boolean b = WordsDatasetHelper.checkIfWordExists(userWordGuess);;
-//            Toast.makeText(this, masterWord+":"+userWordGuess+":"+b, Toast.LENGTH_SHORT).show();
             if(isGameOver){
-                //
             }else if (userWordGuess.length() < 5){
                 tvHintText.setText("Must have 5 letters");
                 playSoundEffect(lose);
@@ -178,8 +169,6 @@ public class MainWordGame extends AppCompatActivity {
         });
 
         binding.gameGridView.setOnItemClickListener((adapterView, view, i, l) -> {
-//            Toast.makeText(this, "clicked", Toast.LENGTH_SHORT).show();
-            //show options
             gameOptions();
         });
     }
@@ -451,43 +440,31 @@ public class MainWordGame extends AppCompatActivity {
         StringBuilder guessStrBldr = new StringBuilder(guess);
         StringBuilder masterStrBldr = new StringBuilder(master);
         if (guess.equals(master)){
-            //win
             isGameOver = true;
             isWon = true;
         }
-        //check oranges first
         for (int q1 = 0 ; q1 < 5 ; q1++){
             if(guessStrBldr.charAt(q1) == masterStrBldr.charAt(q1)){
                 setLetterKeyColor(guessStrBldr.charAt(q1), R.drawable.ripple_orange);
-                //
                 guessStrBldr.setCharAt(q1, '.');
                 masterStrBldr.setCharAt(q1, ',');
                 gridAdapter.setTextColorResource(((gridViewCursor-5) + q1), WHITE);
                 gridAdapter.setBgColorResource(((gridViewCursor-5) + q1), ORANGE);
-                //also update letter keys, idk how yet
             }
         }
-        //check lightblues
         for (int q1 = 0 ; q1 < 5 ; q1++){
-            //
             for (int q2 = 0 ; q2 < 5 ; q2++){
-                //
-//                b = guessStrBldr.charAt(q1) == masterStrBldr.charAt(q2);
                 if (guessStrBldr.charAt(q1) == masterStrBldr.charAt(q2)){
                     setLetterKeyColor(guessStrBldr.charAt(q1), R.drawable.ripple_light_blue);
-                    //
                     guessStrBldr.setCharAt(q1, '.');
                     masterStrBldr.setCharAt(q2, ',');
                     gridAdapter.setTextColorResource(((gridViewCursor-5) + q1), WHITE);
                     gridAdapter.setBgColorResource(((gridViewCursor-5) + q1), LIGHT_BLUE);
-                    //also update letter keys, idk how yet
                     break;
                 }
             }
         }
-        //make the rest grays
         for (int q1 = 0 ; q1 < 5 ; q1++){
-            //
             if (guessStrBldr.charAt(q1) != '.'){
                 setLetterKeyColor(guessStrBldr.charAt(q1), R.drawable.ripple_gray);
                 gridAdapter.setTextColorResource(((gridViewCursor-5) + q1), WHITE);
@@ -498,11 +475,9 @@ public class MainWordGame extends AppCompatActivity {
     void setLetterKeyColor(Character tv, @DrawableRes Integer ripple){
         switch (tv){
             case 'Q':
-                //
                 tvQ.setBackgroundResource(ripple);
                 break;
             case 'W':
-                //
                 tvW.setBackgroundResource(ripple);
                 break;
             case 'E':
@@ -632,7 +607,6 @@ public class MainWordGame extends AppCompatActivity {
         alertDialog.show();
 
         button.setOnClickListener(view -> {
-            //
             setupEmptyGridView();
             alertDialog.dismiss();
         });
@@ -657,13 +631,11 @@ public class MainWordGame extends AppCompatActivity {
         alertDialog.show();
 
         button.setOnClickListener(view -> {
-            //
             setupEmptyGridView();
             alertDialog.dismiss();
         });
 
         music.setOnCheckedChangeListener((compoundButton, b) -> {
-            //
             SharedPreferences.Editor editor = pref.edit();
             editor.putBoolean("music", music.isChecked());
             editor.apply();
@@ -672,7 +644,6 @@ public class MainWordGame extends AppCompatActivity {
             else bg.pause();
         });
         sound.setOnCheckedChangeListener((compoundButton, b1) -> {
-            //
             SharedPreferences.Editor editor = pref.edit();
             editor.putBoolean("sound", sound.isChecked());
             editor.apply();
