@@ -8,7 +8,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class HowToGame extends AppCompatActivity {
-
     TextView btn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

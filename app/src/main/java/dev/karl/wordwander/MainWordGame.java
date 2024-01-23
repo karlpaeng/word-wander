@@ -55,7 +55,7 @@ public class MainWordGame extends AppCompatActivity {
 
         pref = this.getSharedPreferences("WordSharedPrefs", Context.MODE_PRIVATE);
 
-        WordsDatasetHelper.initialize(this);
+        WordsDatasetHelper.initializeWordsList(this);
 
         tvHintText = findViewById(R.id.tvHintText);
 
