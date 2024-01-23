@@ -56,8 +56,8 @@ public class MenuActivity extends AppCompatActivity {
             startActivity(i);
         });
         howTo.setOnClickListener(view -> {
-//            Intent i = new Intent(this, );
-//            startActivity(i);
+            Intent i = new Intent(this, HowToGame.class);
+            startActivity(i);
         });
         exit.setOnClickListener(view -> {
             finishAffinity();

@@ -103,6 +103,7 @@
         android:layout_marginHorizontal="24sp"
         />
     <TextView
+        android:visibility="invisible"
         android:id="@+id/tvPolicyBtn"
         android:layout_width="match_parent"
         android:layout_height="50sp"
@@ -119,7 +120,5 @@
         android:layout_marginHorizontal="48sp"
         android:layout_marginTop="69sp"
         />
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
