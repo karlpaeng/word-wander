@@ -1,39 +1,39 @@
 package dev.karl.wordwander;
 
-import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.FontRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Queue;
 
 import dev.karl.wordwander.databinding.ActivityMainWordGameBinding;
 
 public class MainWordGame extends AppCompatActivity {
-    String userWordGuess, masterWord;
+    SharedPreferences pref;
+//    SharedPreferences.Editor editor;
+    MediaPlayer bg, newTry, reveal, win, lose, mediaPlayer;
+    String userWordGuess, masterWord, firstRun;
     TextView tvQ,tvW,tvE,tvR,tvT,tvY,tvU,tvI,tvO,tvP,tvA,tvS,tvD,tvF,tvG,tvH,tvJ,tvK,tvL,tvZ,tvX,tvC,tvV,tvB,tvN,tvM, tvEnter, tvClear, tvHintText;
     Integer LIGHT_BLUE = R.color.light_blue;
     Integer ORANGE = R.color.orange;
     Integer GRAY = R.color.gray;
     Integer WHITE = R.color.white;
     Integer BLACK = R.color.black;
-    boolean b, isGameOver, isWon, isSoundEnabled, isMusicEnabled;
+    boolean isGameOver, isWon, isSoundEnabled, isMusicEnabled;
     ActivityMainWordGameBinding binding;
     GridAdapter gridAdapter;
     ArrayList<LetterTileModel> letterList = new ArrayList<>();
@@ -47,6 +47,16 @@ public class MainWordGame extends AppCompatActivity {
         getWindow().setStatusBarColor(ContextCompat.getColor(MainWordGame.this, R.color.dark_blue));
         getWindow().setNavigationBarColor(ContextCompat.getColor(MainWordGame.this, R.color.dark_blue));
 
+        bg = MediaPlayer.create(this, R.raw.bullet_train_fantasy_loop);
+        bg.setLooping(true);
+        newTry = MediaPlayer.create(this, R.raw.new_try_sound);
+        reveal = MediaPlayer.create(this, R.raw.reveal_sound);
+        win = MediaPlayer.create(this, R.raw.wins_sound);
+        lose = MediaPlayer.create(this, R.raw.lose_sound);
+
+        pref = this.getSharedPreferences("WordSharedPrefs", Context.MODE_PRIVATE);
+        firstRun = pref.getString("firstRun", "");
+
         WordsDatasetHelper.initialize(this);
 
         tvHintText = findViewById(R.id.tvHintText);
@@ -56,8 +66,14 @@ public class MainWordGame extends AppCompatActivity {
         setTextviewClickListeners();
 
         //
-        isMusicEnabled = true;
-        isSoundEnabled = true;
+
+        isMusicEnabled = pref.getBoolean("music", true);
+        isSoundEnabled = pref.getBoolean("sound", true);
+
+        if (isMusicEnabled){
+            bg.seekTo(0);
+            bg.start();
+        }
 
         tvEnter = findViewById(R.id.tvEnter);
         tvClear = findViewById(R.id.tvClear);
@@ -72,8 +88,10 @@ public class MainWordGame extends AppCompatActivity {
                 //
             }else if (userWordGuess.length() < 5){
                 tvHintText.setText("Must have 5 letters");
+                playSoundEffect(lose);
             }else if (!WordsDatasetHelper.checkIfWordExists(userWordGuess)){
                 tvHintText.setText("\"" + userWordGuess + "\" is not in the word list");
+                playSoundEffect(lose);
             }else{
                 checkMatch(userWordGuess, masterWord);
                 currentTurnCursor = 0;
@@ -84,6 +102,8 @@ public class MainWordGame extends AppCompatActivity {
                     endGameDialog(isWon);
                     isGameOver = true;
                     tvHintText.setText("Correct answer is: " + masterWord);
+                }else{
+                    playSoundEffect(reveal);
                 }
             }
         });
@@ -99,6 +119,7 @@ public class MainWordGame extends AppCompatActivity {
     }
 
     void setupEmptyGridView(){
+        playSoundEffect(newTry);
         for (int q1 = 0 ; q1 < "QWERTYUIOPASDFGHJKLZXCVBNM".length() ; q1++){
             setLetterKeyColor("QWERTYUIOPASDFGHJKLZXCVBNM".charAt(q1), R.drawable.ripple_blue);
         }
@@ -596,9 +617,11 @@ public class MainWordGame extends AppCompatActivity {
         if (hasWon){
             header.setText("You got it!");
             description.setText("You guessed correctly:");
+            playSoundEffect(win);
         }else{
             header.setText("Game Over.");
             description.setText("The correct word was:");
+            playSoundEffect(lose);
         }
 
         builder.setView(v);
@@ -641,12 +664,42 @@ public class MainWordGame extends AppCompatActivity {
 
         music.setOnCheckedChangeListener((compoundButton, b) -> {
             //
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putBoolean("music", music.isChecked());
+            editor.apply();
+            isMusicEnabled = music.isChecked();
+            if (isMusicEnabled) bg.start();
+            else bg.pause();
         });
         sound.setOnCheckedChangeListener((compoundButton, b1) -> {
             //
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putBoolean("sound", sound.isChecked());
+            editor.apply();
+            isSoundEnabled = sound.isChecked();
         });
         close.setOnClickListener(view -> {
             alertDialog.dismiss();
         });
+    }
+
+    void playSoundEffect(MediaPlayer mp){
+        mediaPlayer = mp;
+        if (isSoundEnabled){
+            mediaPlayer.seekTo(0);
+            mediaPlayer.start();
+        }
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        bg.pause();
+        mediaPlayer.pause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isMusicEnabled) bg.start();
     }
 }
