@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -102,9 +103,7 @@ public class MainWordGame extends AppCompatActivity {
             setLetterKeyColor("QWERTYUIOPASDFGHJKLZXCVBNM".charAt(q1), R.drawable.ripple_blue);
         }
         masterWord = WordsDatasetHelper.getNewRandomWord().toUpperCase();
-        //
-//        masterWord = "ADORN";
-        Toast.makeText(this, masterWord, Toast.LENGTH_SHORT).show();
+        Log.d("masterword:", masterWord);
         gridViewCursor = 0;
         currentTurnCursor = 0;
         userWordGuess = "";
