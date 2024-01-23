@@ -6,6 +6,8 @@
     android:background="@color/transparent">
 
     <TextView
+
+        android:contentDescription="letter"
         android:id="@+id/gridItem"
         android:layout_width="50sp"
         android:layout_height="50sp"
