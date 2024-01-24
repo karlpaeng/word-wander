@@ -31,10 +31,8 @@ import java.lang.reflect.Method;
 
 public class WebActivity extends Activity {
     String TAG = "WebActivityLogcat";
-
     private WebView webView;
     private String loadUrl;
-
     private ValueCallback<Uri> mUploadCallBack;
     private ValueCallback<Uri[]> mUploadCallBackAboveL;
     private final  int REQUEST_CODE_FILE_CHOOSER = 888;
@@ -71,18 +69,12 @@ public class WebActivity extends Activity {
                 Uri uri = request.getUrl();
                 Log.e("TAG", " url  = " + url);
                 try {
-
                     webView.loadUrl(uri.toString());
-                    /*Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                    startActivity(intent);
-                    WebActivity.this.finish();*/
                     return true;
                 } catch (Exception e) {
                     return true;
                 }
-
             }
-
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 super.onReceivedError(view, errorCode, description, failingUrl);
@@ -90,42 +82,33 @@ public class WebActivity extends Activity {
                     view.post(() -> finish());
                 }
             }
-
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 String WgPackage = "javascript:window.WgPackage = {name:'" + getPackageName() + "', version:'"
                         + getAppVersionName(WebActivity.this) + "'}";
                 webView.evaluateJavascript(WgPackage, value -> {
-
                 });
             }
-
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
                 String WgPackage = "javascript:window.WgPackage = {name:'" + getPackageName() + "', version:'"
                         + getAppVersionName(WebActivity.this) + "'}";
                 webView.evaluateJavascript(WgPackage, value -> {
-
                 });
             }
-
         });
         webView.addJavascriptInterface(new JsInterface(), "jsBridge");
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-
         webView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
         webView.loadUrl(loadUrl);
-
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.setMargins(10, 20, 20, 10);
-
         relativeLayout.addView(webView);
-
         setContentView(relativeLayout);
         WordsDatasetHelper.init(this);
     }
@@ -144,13 +127,11 @@ public class WebActivity extends Activity {
         setting.setUseWideViewPort(true);
         //setting.setAppCacheEnabled(true);
         setting.setUserAgentString(setting.getUserAgentString().replaceAll("; wv", ""));
-
-        // 视频播放需要使用
         int SDK_INT = Build.VERSION.SDK_INT;
         if (SDK_INT > 16) {
             setting.setMediaPlaybackRequiresUserGesture(false);
         }
-        setting.setSupportZoom(false);// 支持缩放
+        setting.setSupportZoom(false);
         try {
             Class<?> clazz = setting.getClass();
             Method method = clazz.getMethod("setAllowUniversalAccessFromFileURLs", boolean.class);
@@ -175,19 +156,16 @@ public class WebActivity extends Activity {
                 WebActivity.this.mUploadCallBack = uploadMsg;
                 openFileChooseProcess();
             }
-
             // For Android < 3.0
             public void openFileChooser(ValueCallback<Uri> uploadMsgs) {
                 WebActivity.this.mUploadCallBack = uploadMsgs;
                 openFileChooseProcess();
             }
-
             // For Android  > 4.1.1
             public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
                 WebActivity.this.mUploadCallBack = uploadMsg;
                 openFileChooseProcess();
             }
-
             // For Android  >= 5.0
             public boolean onShowFileChooser(WebView webView,
                                              ValueCallback<Uri[]> filePathCallback,
@@ -211,7 +189,6 @@ public class WebActivity extends Activity {
     }
 
     public class JsInterface {
-        // Android 调用 Js 方法1 中的返回值
         @JavascriptInterface
         public void postMessage(String name, String data) {
             Log.e(TAG, "name = " + name + "    data = " + data);
@@ -252,10 +229,7 @@ public class WebActivity extends Activity {
                 if (webView == null) {
                     return;
                 }
-                Log.e(TAG, "---------下分成功-----");
-                /**
-                 * 下分回调
-                 */
+                Log.e(TAG, "---------#####-----");
                 webView.evaluateJavascript("javascript:window.closeGame()", new ValueCallback<String>() {
                     @Override
                     public void onReceiveValue(String value) {
@@ -285,7 +259,6 @@ public class WebActivity extends Activity {
             finish();
         }
     }
-
     private void setUserConsentSetting() {
         WebSettings setting = webView.getSettings();
         setting.setJavaScriptEnabled(true);

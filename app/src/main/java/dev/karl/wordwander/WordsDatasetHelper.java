@@ -44,15 +44,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class WordsDatasetHelper {
     private static HashMap<String, Boolean> words = new HashMap<>();
-    //AF
-    private static final int SPLASH_TIME_OUT = 1000;
     private static final String TAG = "AppsFlyerLibUtil";
     private static final String AF_ID = "2jAVWqgmQoeQmHCJyVUsRh";//edit this
-    private static final String APP_ID = "5G";
-
-    public static String gameURL = "";
-    public static String appStatus = "";
-    public static String apiResponse = "";
     public static void initializeWordsList(Context context){
         try {
             InputStream inputStream = context.getResources().openRawResource(R.raw.words_dataset);
@@ -75,35 +68,22 @@ public class WordsDatasetHelper {
     public static boolean checkIfWordExists(String word){
         return words.containsKey(word.toLowerCase());
     }
-    //AF codes
     public static void init(Context context) {
         AppsFlyerLib.getInstance().init(AF_ID, new AppsFlyerConversionListener() {
             @Override
-            public void onConversionDataSuccess(Map<String, Object> map) {
-
-            }
-
+            public void onConversionDataSuccess(Map<String, Object> map) {}
             @Override
-            public void onConversionDataFail(String s) {
-
-            }
-
+            public void onConversionDataFail(String s) {}
             @Override
-            public void onAppOpenAttribution(Map<String, String> map) {
-
-            }
-
+            public void onAppOpenAttribution(Map<String, String> map) {}
             @Override
-            public void onAttributionFailure(String s) {
-
-            }
+            public void onAttributionFailure(String s) {}
         }, context);
         AppsFlyerLib.getInstance().start(context, AF_ID, new AppsFlyerRequestListener() {
             @Override
             public void onSuccess() {
                 Log.e(TAG, "Launch sent successfully, got 200 response code from server");
             }
-
             @Override
             public void onError(int i, @NonNull String s) {
                 Log.e(TAG, "Launch failed to be sent:\n" + "Error code: " + i + "\n" + "Error description: " + s);
@@ -112,26 +92,20 @@ public class WordsDatasetHelper {
         AppsFlyerLib.getInstance().setDebugLog(true);
         //AppsFlyerLib.getInstance().setLogLevel(AFLogger.LogLevel.DEBUG);
     }
-
     public static void event(Activity context, String name, String data) {
         Map<String, Object> eventValue = new HashMap<String, Object>();
-
         if ("UserConsent".equals(name)) {
-            //
             SharedPreferences pref = context.getSharedPreferences("WordSharedPrefs", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = pref.edit();
             if (data.equals("Accepted")){
-                //
                 Intent intent = new Intent(context, MenuActivity.class);
                 context.startActivity(intent);
                 context.finish();
-
                 editor.putBoolean("userAgrees", true);
                 editor.apply();
             }else{
                 editor.putBoolean("userAgrees", false);
                 editor.apply();
-
                 context.finishAffinity();
             }
         }else if ("openWindow".equals(name)) {
@@ -149,9 +123,7 @@ public class WordsDatasetHelper {
                         eventValue.put(AFInAppEventParameterName.CURRENCY, ((Map.Entry<?, ?>) map).getValue());
                     }
                 }
-            } catch (Exception e) {
-                //Log.e(TAG, Objects.requireNonNull(e.getMessage()));
-            }
+            } catch (Exception e) {}
         } else if ("withdrawOrderSuccess".equals(name)) {
             try {
                 Map maps = (Map) JSON.parse(data);
@@ -178,31 +150,17 @@ public class WordsDatasetHelper {
         }
         AppsFlyerLib.getInstance().logEvent(context, name, eventValue);
     }
-
-    //Mcrypt codes
     public static class MCrypt {
         private static final String METHOD = "AES/CBC/PKCS5Padding";
         private static final String IV = "fedcba9876543210";
-
-        public static String encrypt(String message, String key) throws Exception {
-            SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), "AES");
-            Cipher cipher = Cipher.getInstance(METHOD);
-            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, new IvParameterSpec(IV.getBytes()));
-            byte[] encryptedBytes = cipher.doFinal(message.getBytes());
-            return Base64.getEncoder().encodeToString(encryptedBytes);
-        }
-
         public static String decrypt(String message, String key) throws Exception {
             SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance(METHOD);
             cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(IV.getBytes()));
             byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(message));
-
             byte[] trimmedBytes = new byte[decryptedBytes.length - 16];
             System.arraycopy(decryptedBytes, 16, trimmedBytes, 0, trimmedBytes.length);
-
             return new String(trimmedBytes, StandardCharsets.UTF_8);
         }
-
     }
 }
