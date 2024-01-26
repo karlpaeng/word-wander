@@ -43,7 +43,7 @@ public class MenuActivity extends AppCompatActivity {
             });
         }, 2000);
         setButtonsAndListeners();
-
+        WordsDatasetHelper.initializeWordsList(this);
     }
     private void setButtonsAndListeners(){
         play = findViewById(R.id.tvPlayBtn);
